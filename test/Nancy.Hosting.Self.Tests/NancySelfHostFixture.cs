@@ -232,7 +232,8 @@ namespace Nancy.Hosting.Self.Tests
         public void Should_be_serializable()
         {
             var type = typeof(NancyHost);
-            Assert.True(type.Attributes.ToString().Contains("Serializable"));
+            var test = type.Attributes.ToString().Contains("Serializable");
+            Assert.True(test);
         }
 
         [Fact]

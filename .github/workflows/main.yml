@@ -58,25 +58,25 @@ jobs:
 #          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
 #          coverage-reports: coverage/lcov.info
 
-#  publish-test-summary:
-#    name: "publish test-summary"
-#    needs: test
-#    runs-on: ubuntu-latest
-#    permissions:
-#      checks: write
-#      pull-requests: write
-#
-#    if: always()
-#
-#    steps:
-#      - name: Download Artifacts
-#        uses: actions/download-artifact@v4
-#        with:
-#          path: artifacts
-#
-#      - name: publish test-summary
-#        uses: EnricoMi/publish-unit-test-result-action@v2
-#        with:
-#          check_run_annotations: 'none'
-#          check_name: 'test-results'
-#          files: "artifacts/**/*.xml"
+  publish-test-summary:
+    name: "publish test-summary"
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+
+    if: always()
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: publish test-summary
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          check_run_annotations: 'none'
+          check_name: 'test-results'
+          files: "artifacts/**/*.xml"

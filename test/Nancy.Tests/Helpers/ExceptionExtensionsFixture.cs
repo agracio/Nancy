@@ -21,7 +21,7 @@
             var exception1 = new Exception("Exception 1", new Exception("Inner exception of exception 1"));
             var exception2 = new Exception("Exception 2", new Exception("Inner exception of exception 2"));
             var exception3 = new Exception("Exception 3", new Exception("Inner exception of exception 3"));
-            
+
             // Aggregate exceptions nested three levels deep.
             var aggregate3 = new AggregateException(exception3);
             var aggregate2 = new AggregateException(aggregate3, exception2);
@@ -39,7 +39,10 @@
             Assert.Equal(3, innerExceptions.Count);
 
             foreach (var exception in expectedExceptions)
-                Assert.True(innerExceptions.Contains(exception));
+            {
+                var test = innerExceptions.Contains(exception);
+                Assert.True(test);
+            }
         }
     }
 }

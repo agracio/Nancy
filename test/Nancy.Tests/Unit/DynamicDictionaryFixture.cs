@@ -1133,7 +1133,7 @@ namespace Nancy.Tests.Unit
             var result = input.ToDictionary();
 
             //Then
-            Assert.IsType(typeof(Dictionary<string, object>), result);
+            Assert.IsType<Dictionary<string, object>>(result);
         }
 
         [Fact]

@@ -50,7 +50,8 @@
             var result = await browser.Get(DiagnosticsConfiguration.Default.Path);
 
             // Then
-            Assert.True(result.Body.AsString().Contains("Diagnostics Disabled"));
+            var test = result.Body.AsString().Contains("Diagnostics Disabled");
+            Assert.True(test);
         }
 
         [Fact]
@@ -77,7 +78,8 @@
             var result = await browser.Get(DiagnosticsConfiguration.Default.Path);
 
             // Then
-            Assert.True(result.Body.AsString().Contains("Diagnostics Disabled"));
+            var test = result.Body.AsString().Contains("Diagnostics Disabled");
+            Assert.True(test);
         }
 #endif
 
@@ -342,14 +344,14 @@
                 with.Diagnostics<DefaultDiagnostics>();
             });
             var browser = new Browser(bootstrapper);
-            
+
             // When
             var result = await browser.Post(DiagnosticsConfiguration.Default.Path + "/settings", with =>
             {
                 with.Cookie(DiagsCookieName, this.GetSessionCookieValue("password"));
                 with.JsonBody(new SettingsModel { Name = "CaseSensitive", Value = true });
             });
-            
+
             // Then
             result.StatusCode.ShouldEqual(HttpStatusCode.OK);
         }

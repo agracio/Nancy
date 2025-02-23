@@ -27,7 +27,7 @@ namespace Nancy.Tests.Unit
             pipeline += r => { };
 
             pipeline.PipelineDelegates.ShouldHaveCount(1);
-            Assert.Equal(1, pipeline.PipelineDelegates.Count());
+            Assert.Single(pipeline.PipelineDelegates);
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace Nancy.Tests.Unit
             var castPipeline = new AfterPipeline();
             castPipeline += r => { };
 
-            Assert.Equal(1, castPipeline.PipelineDelegates.Count());
+            Assert.Single(castPipeline.PipelineDelegates);
         }
 
         [Fact]

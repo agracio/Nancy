@@ -60,7 +60,7 @@
             pipeline.AddItemToEndOfPipeline(item1);
             pipeline.AddItemToEndOfPipeline(item2);
             pipeline.AddItemToEndOfPipeline(item3);
-            
+
             // When
             var result = await pipeline.Invoke(CreateContext(), new CancellationToken());
 
@@ -124,9 +124,9 @@
             // Given
             var item1Called = false;
             Func<NancyContext, Response> item1 = r => { item1Called = true; return null; };
-            var item2Called = false;               
+            var item2Called = false;
             Func<NancyContext, Response> item2 = r => { item2Called = true; return null; };
-            var item3Called = false;               
+            var item3Called = false;
             Func<NancyContext, Response> item3 = r => { item3Called = true; return null; };
             pipeline.AddItemToEndOfPipeline(item1);
             pipeline.AddItemToEndOfPipeline(item2);
@@ -152,7 +152,7 @@
             BeforePipeline castPipeline = item2;
 
             // Then
-            Assert.Equal(1, castPipeline.PipelineDelegates.Count());
+            Assert.Single(castPipeline.PipelineDelegates);
             Assert.Same(item2, castPipeline.PipelineDelegates.First());
         }
 

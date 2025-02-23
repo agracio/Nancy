@@ -121,8 +121,8 @@ Hi there!
             var location = FindView("standalone");
 
             var result = this.viewEngine.ConvertMarkdown(location);
-
-            Assert.True(result.StartsWith("<!DOCTYPE html>"));
+            var test = result.StartsWith("<!DOCTYPE html>");
+            Assert.True(test);
         }
 
         [Fact]
@@ -151,8 +151,8 @@ Hi there!
             response.Contents.Invoke(stream);
 
             var result = ReadAll(stream);
-
-            Assert.True(result.StartsWith("<!DOCTYPE html>"));
+            var test = result.StartsWith("<!DOCTYPE html>");
+            Assert.True(test);
         }
 
         [Fact]

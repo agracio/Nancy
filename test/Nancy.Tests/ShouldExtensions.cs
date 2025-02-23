@@ -86,7 +86,8 @@
 
         public static void ShouldHave<T>(this IEnumerable<T> list, Func<T, bool> predicate)
         {
-            Assert.True(list.Any(predicate));
+            var result = list.Any(predicate);
+            Assert.True(result);
         }
 
         public static void ShouldHaveCount<T>(this IEnumerable<T> list, int expected)

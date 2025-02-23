@@ -436,7 +436,8 @@ namespace Nancy.Tests.Functional.Tests
 
             // Then
             Assert.True(response.Headers.ContainsKey("Vary"));
-            Assert.True(response.Headers["Vary"].Contains("Accept"));
+            var result = response.Headers["Vary"].Contains("Accept");
+            Assert.True(result);
         }
 
         [Fact]
@@ -660,7 +661,8 @@ namespace Nancy.Tests.Functional.Tests
             var result = await RecordAsync.Exception(() => browser.Get("/invalid-view-name"));
 
             // Then
-            Assert.True(result.ToString().Contains("Unable to locate requested view"));
+            var test = result.ToString().Contains("Unable to locate requested view");
+            Assert.True(test);
         }
 
         [Fact]
@@ -768,7 +770,7 @@ namespace Nancy.Tests.Functional.Tests
                 with.Get("/null", (x, m) => (object)null);
             });
 
-            module.After += context => 
+            module.After += context =>
             {
                 if (context.NegotiationContext.DefaultModel == null)
                 {
