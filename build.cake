@@ -10,14 +10,14 @@ var nogit = Argument<bool>("nogit", false);
 
 // Variables
 var configuration = "Release";
-var fullFrameworkTarget = "net481";
+var fullFrameworkTarget = "net472";
 var netStandardTarget = "netstandard2.0";
 var netCoreTarget = "net8.0";
 
 // Directories
 var output = Directory("build");
 var outputBinaries = output + Directory("binaries");
-var outputBinariesNet452 = outputBinaries + Directory(fullFrameworkTarget);
+var outputBinariesNet472 = outputBinaries + Directory(fullFrameworkTarget);
 var outputBinariesNetstandard = outputBinaries + Directory(netStandardTarget);
 var outputPackages = output + Directory("packages");
 var outputNuGet = output + Directory("nuget");
@@ -39,7 +39,7 @@ Task("Clean")
             outputBinaries,
             outputPackages,
             outputNuGet,
-            outputBinariesNet452,
+            outputBinariesNet472,
             outputBinariesNetstandard
         });
 
@@ -59,9 +59,18 @@ Task("Compile")
         {
             Configuration = configuration,
         });
-        var projects =
-            GetFiles("./**/*.csproj") -
-            GetFiles("./samples/**/*.csproj");
+    });
+
+Task("Test")
+    .Description("Executes unit tests for all projects")
+    .IsDependentOn("Compile")
+    .Does(() =>
+    {
+        if (StartProcess("dotnet", "test") != 0)
+        {
+            Information("One or more tests failed during execution");
+            //throw new CakeException("One or more tests failed during execution");
+        }
     });
 
 Task("Package")
@@ -107,11 +116,11 @@ Task("Publish")
     .IsDependentOn("Compile")
     .Does(() =>
     {
-        // Copy net452 binaries.
+        // Copy net462 binaries.
         CopyFiles(GetFiles("./src/**/bin/" + configuration + "/" + fullFrameworkTarget + "/*.dll")
             + GetFiles("./src/**/bin/" + configuration + "/" + fullFrameworkTarget + "/*.xml")
             + GetFiles("./src/**/bin/" + configuration + "/" + fullFrameworkTarget + "/*.pdb")
-            + GetFiles("./src/**/*.ps1"), outputBinariesNet452);
+            + GetFiles("./src/**/*.ps1"), outputBinariesNet462);
 
         // Copy netstandard binaries.
         CopyFiles(GetFiles("./src/**/bin/" + configuration + "/" + netStandardTarget + "/*.dll")
@@ -222,62 +231,6 @@ Task("Tag")
         StartProcess("git", new ProcessSettings {
             Arguments = string.Format("tag \"v{0}\"", version)
         });
-    });
-
-Task("Test")
-    .Description("Executes unit tests for all projects")
-    .IsDependentOn("Compile")
-    .Does(() =>
-    {
-        /*
-            Exclude Nancy.ViewEngines.Spark.Tests from test execution until their problem
-            with duplicate assembly references (if the same assembly exists more than once
-            in the application domain, it fails to compile the views) has been fixed.
-        */
-
-        if (StartProcess("dotnet", "test") != 0)
-        {
-            Information("One or more tests failed during execution");
-            //throw new CakeException("One or more tests failed during execution");
-        }
-
-//         var projects =
-//             GetFiles("./test/**/*.csproj") -
-//             GetFiles("./test/Nancy.ViewEngines.Spark.Tests/Nancy.ViewEngines.Spark.Tests.csproj");
-//
-//         if (projects.Count == 0)
-//         {
-//             throw new CakeException("Unable to find any projects to test.");
-//         }
-//
-//         foreach(var project in projects)
-//         {
-//             var content =
-//                 System.IO.File.ReadAllText(project.FullPath, Encoding.UTF8);
-//
-//             if (IsRunningOnUnix() && content.Contains(">" + fullFrameworkTarget + "<"))
-//             {
-//                 Information(project.GetFilename() + " only supports " +fullFrameworkTarget + " and tests cannot be executed on *nix. Skipping.");
-//                 continue;
-//             }
-//
-//             var settings = new ProcessSettings {
-//                 Arguments = string.Concat("xunit -configuration ", configuration, " -nobuild"),
-//                 WorkingDirectory = project.GetDirectory()
-//             };
-//
-//             if (IsRunningOnUnix())
-//             {
-//                 settings.Arguments.Append(string.Concat("-framework ", netCoreTarget));
-//             }
-//
-//             Information("Executing tests for " + project.GetFilename() + " with arguments: " + settings.Arguments.Render());
-//
-//             if (StartProcess("dotnet", settings) != 0)
-//             {
-//                 throw new CakeException("One or more tests failed during execution of: " + project.GetFilename());
-//             }
-//         }
     });
 
 Task("Update-Version")

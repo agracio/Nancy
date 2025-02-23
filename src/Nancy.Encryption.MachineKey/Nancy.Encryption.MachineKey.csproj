@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>System.Web MachineKey encrypton and HMAC providers for Nancy.</Description>
     <PackageTags>$(PackageTags);Encryption</PackageTags>
-    <TargetFramework>net481</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

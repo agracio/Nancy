@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net481</TargetFrameworks>
+    <TargetFrameworks>net8.0;net472</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,11 +21,11 @@
     <PackageReference Update="FakeItEasy" Version="8.3.0" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net481' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
     <PackageReference Include="System.Collections.Immutable" Version="9.0.2" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net481' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>

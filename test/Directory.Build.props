@@ -2,7 +2,7 @@
   <PropertyGroup>
     <CodeAnalysisRuleSet>..\..\Nancy.ruleset</CodeAnalysisRuleSet>
     <Configurations>Debug;Release</Configurations>
-    <DisableImplicitFrameworkReferences Condition=" '$(TargetFramework)' == 'net452' ">true</DisableImplicitFrameworkReferences>
+    <DisableImplicitFrameworkReferences Condition=" '$(TargetFramework)' == 'net472' ">true</DisableImplicitFrameworkReferences>
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
@@ -43,7 +43,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0-beta.1.build3958" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Dynamic.Runtime" />
     <Reference Include="System.Threading.Tasks" />

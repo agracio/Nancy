@@ -1,4 +1,4 @@
-﻿#if !CORE
+﻿#if !NETCOREAPP
 namespace Nancy.Tests.Functional.Tests
 {
     using System.Threading.Tasks;

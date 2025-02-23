@@ -50,7 +50,7 @@ fi
 # RUN BUILD SCRIPT
 ###########################################################################
 
-# Point net452 to Mono assemblies
+# Point net472 to Mono assemblies
 export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.5/
 
 # Start Cake

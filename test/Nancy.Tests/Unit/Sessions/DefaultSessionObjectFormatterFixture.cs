@@ -64,7 +64,7 @@ namespace Nancy.Tests.Unit.Sessions
             output.ShouldBeNull();
         }
 
-#if !CORE
+#if !NETCOREAPP
         [Serializable]
 #endif
         public class Payload : IEquatable<Payload>

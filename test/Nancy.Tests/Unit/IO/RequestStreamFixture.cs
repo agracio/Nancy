@@ -396,7 +396,7 @@ namespace Nancy.Tests.Unit.IO
         {
             // Given
             var stream = CreateFakeStream();
-            
+
             // When
             var request = RequestStream.FromStream(stream, 1, 0, false);
 
@@ -436,7 +436,7 @@ namespace Nancy.Tests.Unit.IO
             request.IsInMemory.ShouldBeTrue();
         }
 
-#if !CORE // BeginRead, EndRead, BeginWrite, EndWrite don't exist in .NET Core
+#if !NETCOREAPP // BeginRead, EndRead, BeginWrite, EndWrite don't exist in .NET Core
         [Fact]
         public void Should_call_beginread_on_underlaying_stream_when_beginread_is_called()
         {
@@ -567,7 +567,7 @@ namespace Nancy.Tests.Unit.IO
             A.CallTo(() => stream.CanSeek).Returns(true);
             A.CallTo(() => stream.CanTimeout).Returns(true);
             A.CallTo(() => stream.CanWrite).Returns(true);
-            
+
             return stream;
         }
 
