@@ -37,13 +37,20 @@ jobs:
       - name: "Cake"
         shell: pwsh
         run: .\build.ps1 -verbosity=minimal
-#
-#      - name: Upload Test Results
-#        if: always()
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: test-summary
-#          path: coverage/junit.xml
+
+      - name: Upload nuget packages
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: build/nuget/*.nupkg
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+            name: test-results
+            path: test/*.Tests\TestResults\TestResults.xml
 #
 #      - name: Run codacy-coverage-reporter
 #        uses: codacy/codacy-coverage-reporter-action@v1.3.0
