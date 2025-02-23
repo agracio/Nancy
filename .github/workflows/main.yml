@@ -36,7 +36,7 @@ jobs:
 
       - name: "Cake"
         shell: pwsh
-        run: .\build.ps1 -verbosity=minimal
+        run: .\build.ps1
 
       - name: Upload nuget packages
         if: always()
