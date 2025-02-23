@@ -14,7 +14,7 @@ namespace Nancy.Tests.Unit.Bootstrapper
         {
             IAssemblyCatalog assemblyCatalog;
 
-#if !CORE
+#if !NETCOREAPP
             assemblyCatalog = new AppDomainAssemblyCatalog();
 #else
             assemblyCatalog = new DependencyContextAssemblyCatalog();

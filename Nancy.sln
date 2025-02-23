@@ -10,6 +10,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{AAB0D92A-7B90-478A-8360-3E6A20BD0B71}"
 	ProjectSection(SolutionItems) = preProject
 		NuGet.config = NuGet.config
+		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
+		build.cake = build.cake
+		build.ps1 = build.ps1
+		build.sh = build.sh
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{AA791E28-7914-439A-B59A-580B8D8FE95D}"
@@ -94,6 +98,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nancy.Demo.Hosting.Kestrel", "samples\Nancy.Demo.Hosting.Kestrel\Nancy.Demo.Hosting.Kestrel.csproj", "{3AF8D59E-D10A-46DE-97A6-0A6C156F22CD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nancy.ViewEngines.Spark.Tests", "test\Nancy.ViewEngines.Spark.Tests\Nancy.ViewEngines.Spark.Tests.csproj", "{08C1D823-E8E1-4D86-8F73-A9F3AE8FEFC7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{8CB84AA7-A851-452A-B2CC-3AFF1C2B9827}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

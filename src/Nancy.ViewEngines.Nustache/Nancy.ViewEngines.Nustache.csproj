@@ -2,10 +2,10 @@
   <PropertyGroup>
     <Description>Enables using the Nustache view engine with Nancy.</Description>
     <PackageTags>$(PackageTags);View Engine;Nustache</PackageTags>
-    <TargetFramework>net452</TargetFramework>
+    <TargetFramework>net481</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nustache" Version="1.13.8.22" />
+    <PackageReference Include="Nustache" Version="1.16.0.10" />
   </ItemGroup>
 </Project>

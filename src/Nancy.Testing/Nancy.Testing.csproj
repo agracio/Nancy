@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>Test harness for Nancy applications.</Description>
     <PackageTags>$(PackageTags);Testing</PackageTags>
-    <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net481</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,7 +22,7 @@
     <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net481' ">
     <Reference Include="System.IO" />
     <Reference Include="System.Runtime" />
     <Reference Include="System.Xml.Linq" />

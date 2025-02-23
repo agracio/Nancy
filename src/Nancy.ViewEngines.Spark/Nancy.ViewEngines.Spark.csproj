@@ -2,11 +2,11 @@
   <PropertyGroup>
     <Description>Enables using the Spark view engine with Nancy.</Description>
     <PackageTags>$(PackageTags);View Engine;Spark</PackageTags>
-    <TargetFramework>net452</TargetFramework>
+    <TargetFramework>net481</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Spark" Version="1.7.0" />
+    <PackageReference Include="Spark" Version="1.8.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,3 +1,4 @@
+// ReSharper disable VirtualMemberCallInConstructor
 namespace Nancy.Testing.Tests
 {
     using System;

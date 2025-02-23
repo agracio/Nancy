@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>Adds Data Annotation validation support to Nancy.</Description>
     <PackageTags>$(PackageTags);Validation;DataAnnotations</PackageTags>
-    <TargetFramework>net452</TargetFramework>
+    <TargetFramework>net481</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

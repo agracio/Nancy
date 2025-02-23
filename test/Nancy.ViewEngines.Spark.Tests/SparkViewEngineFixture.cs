@@ -250,7 +250,7 @@
             this.FindViewAndRender("ViewThatUsesTildeSubstitution");
 
             //Then
-            this.output.ShouldContain(@"<script type=""text/javascript"" src=""/mysensationalrootfolder/scripts/test.js""/>");
+            this.output.ShouldContain(@"<script type=""text/javascript"" src=""/mysensationalrootfolder/scripts/test.js""></script>");
         }
 
 #if !__MonoCS__
@@ -265,7 +265,7 @@
             this.FindViewAndRender("ViewThatUsesTildeSubstitutionWithSparkReplace");
 
             //Then
-            this.output.ShouldContain(@"<script type=""text/javascript"" src=""http://cdn.example.com/mysite/scripts/test.js""/>");
+            this.output.ShouldContain(@"<script type=""text/javascript"" src=""http://cdn.example.com/mysite/scripts/test.js""></script>");
         }
 #endif
 
