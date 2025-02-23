@@ -177,7 +177,6 @@
             }
         }
 
-#if !NETSTANDARD1_6
         /// <summary>
         /// Begins an asynchronous read operation.
         /// </summary>
@@ -205,7 +204,6 @@
         {
             return this.stream.BeginWrite(buffer, offset, count, callback, state);
         }
-#endif
 
         /// <summary>
         /// Releases the unmanaged resources used by the <see cref="T:System.IO.Stream" /> and optionally releases the managed resources.
@@ -229,7 +227,7 @@
 
             base.Dispose(disposing);
         }
-#if !NETSTANDARD1_6
+
         /// <summary>
         /// Waits for the pending asynchronous read to complete.
         /// </summary>
@@ -252,7 +250,6 @@
 
             this.ShiftStreamToFileStreamIfNecessary();
         }
-#endif
 
         /// <summary>
         /// Clears all buffers for this stream and causes any buffered data to be written to the underlying device.

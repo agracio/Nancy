@@ -63,10 +63,10 @@ Task("Compile")
 
 Task("Test")
     .Description("Executes unit tests for all projects")
-    .IsDependentOn("Compile")
+    //.IsDependentOn("Compile")
     .Does(() =>
     {
-        if (StartProcess("dotnet", "test") != 0)
+        if (StartProcess("dotnet", "test --logger \"trx;LogFileName=TestResults.xml\"") != 0)
         {
             Information("One or more tests failed during execution");
             //throw new CakeException("One or more tests failed during execution");
@@ -116,11 +116,11 @@ Task("Publish")
     .IsDependentOn("Compile")
     .Does(() =>
     {
-        // Copy net462 binaries.
+        // Copy net472 binaries.
         CopyFiles(GetFiles("./src/**/bin/" + configuration + "/" + fullFrameworkTarget + "/*.dll")
             + GetFiles("./src/**/bin/" + configuration + "/" + fullFrameworkTarget + "/*.xml")
             + GetFiles("./src/**/bin/" + configuration + "/" + fullFrameworkTarget + "/*.pdb")
-            + GetFiles("./src/**/*.ps1"), outputBinariesNet462);
+            + GetFiles("./src/**/*.ps1"), outputBinariesNet472);
 
         // Copy netstandard binaries.
         CopyFiles(GetFiles("./src/**/bin/" + configuration + "/" + netStandardTarget + "/*.dll")

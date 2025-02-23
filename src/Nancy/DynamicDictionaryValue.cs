@@ -336,12 +336,7 @@
                     }
                 }
 
-#if !NETSTANDARD1_6
                 result = Convert.ChangeType(this.value, typeCode);
-#else
-                result = Convert.ChangeType(this.value, binderType);
-#endif
-
                 return true;
             }
             return base.TryConvert(binder, out result);
