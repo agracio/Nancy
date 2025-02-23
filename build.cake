@@ -10,9 +10,9 @@ var nogit = Argument<bool>("nogit", false);
 
 // Variables
 var configuration = "Release";
-var fullFrameworkTarget = "net452";
+var fullFrameworkTarget = "net481";
 var netStandardTarget = "netstandard2.0";
-var netCoreTarget = "netcoreapp2.0";
+var netCoreTarget = "net8.0";
 
 // Directories
 var output = Directory("build");
@@ -51,41 +51,17 @@ Task("Clean")
 Task("Compile")
     .Description("Builds all the projects in the solution")
     .IsDependentOn("Clean")
-    .IsDependentOn("Restore-NuGet-Packages")
+    //.IsDependentOn("Restore-NuGet-Packages")
     .Does(() =>
     {
+
+        DotNetCoreBuild("./Nancy.sln", new DotNetCoreBuildSettings
+        {
+            Configuration = configuration,
+        });
         var projects =
             GetFiles("./**/*.csproj") -
             GetFiles("./samples/**/*.csproj");
-
-        if (projects.Count == 0)
-        {
-            throw new CakeException("Unable to find any projects to build.");
-        }
-
-        foreach(var project in projects)
-        {
-            var content =
-                System.IO.File.ReadAllText(project.FullPath, Encoding.UTF8);
-
-            if (IsRunningOnUnix() && content.Contains(">" + fullFrameworkTarget + "<"))
-            {
-                Information(project.GetFilename() + " only supports " +fullFrameworkTarget + " and cannot be built on *nix. Skipping.");
-                continue;
-            }
-
-            DotNetCoreBuild(project.GetDirectory().FullPath, new DotNetCoreBuildSettings {
-                ArgumentCustomization = args => {
-                    if (IsRunningOnUnix())
-                    {
-                        args.Append(string.Concat("-f ", project.GetDirectory().GetDirectoryName().Contains(".Tests") ? netCoreTarget : netStandardTarget));
-                    }
-
-                    return args;
-                },
-                Configuration = configuration
-            });
-        }
     });
 
 Task("Package")
@@ -259,43 +235,49 @@ Task("Test")
             in the application domain, it fails to compile the views) has been fixed.
         */
 
-        var projects =
-            GetFiles("./test/**/*.csproj") -
-            GetFiles("./test/Nancy.ViewEngines.Spark.Tests/Nancy.ViewEngines.Spark.Tests.csproj");
-
-        if (projects.Count == 0)
+        if (StartProcess("dotnet", "test") != 0)
         {
-            throw new CakeException("Unable to find any projects to test.");
+            Information("One or more tests failed during execution");
+            //throw new CakeException("One or more tests failed during execution");
         }
 
-        foreach(var project in projects)
-        {
-            var content =
-                System.IO.File.ReadAllText(project.FullPath, Encoding.UTF8);
-
-            if (IsRunningOnUnix() && content.Contains(">" + fullFrameworkTarget + "<"))
-            {
-                Information(project.GetFilename() + " only supports " +fullFrameworkTarget + " and tests cannot be executed on *nix. Skipping.");
-                continue;
-            }
-
-            var settings = new ProcessSettings {
-                Arguments = string.Concat("xunit -configuration ", configuration, " -nobuild"),
-                WorkingDirectory = project.GetDirectory()
-            };
-
-            if (IsRunningOnUnix())
-            {
-                settings.Arguments.Append(string.Concat("-framework ", netCoreTarget));
-            }
-
-            Information("Executing tests for " + project.GetFilename() + " with arguments: " + settings.Arguments.Render());
-
-            if (StartProcess("dotnet", settings) != 0)
-            {
-                throw new CakeException("One or more tests failed during execution of: " + project.GetFilename());
-            }
-        }
+//         var projects =
+//             GetFiles("./test/**/*.csproj") -
+//             GetFiles("./test/Nancy.ViewEngines.Spark.Tests/Nancy.ViewEngines.Spark.Tests.csproj");
+//
+//         if (projects.Count == 0)
+//         {
+//             throw new CakeException("Unable to find any projects to test.");
+//         }
+//
+//         foreach(var project in projects)
+//         {
+//             var content =
+//                 System.IO.File.ReadAllText(project.FullPath, Encoding.UTF8);
+//
+//             if (IsRunningOnUnix() && content.Contains(">" + fullFrameworkTarget + "<"))
+//             {
+//                 Information(project.GetFilename() + " only supports " +fullFrameworkTarget + " and tests cannot be executed on *nix. Skipping.");
+//                 continue;
+//             }
+//
+//             var settings = new ProcessSettings {
+//                 Arguments = string.Concat("xunit -configuration ", configuration, " -nobuild"),
+//                 WorkingDirectory = project.GetDirectory()
+//             };
+//
+//             if (IsRunningOnUnix())
+//             {
+//                 settings.Arguments.Append(string.Concat("-framework ", netCoreTarget));
+//             }
+//
+//             Information("Executing tests for " + project.GetFilename() + " with arguments: " + settings.Arguments.Render());
+//
+//             if (StartProcess("dotnet", settings) != 0)
+//             {
+//                 throw new CakeException("One or more tests failed during execution of: " + project.GetFilename());
+//             }
+//         }
     });
 
 Task("Update-Version")

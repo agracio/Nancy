@@ -9,7 +9,7 @@ Building Nancy
 1. At the command prompt, navigate to the Nancy root folder (should contain build.cake)
 2. To run the default build (which will compile, test and package Nancy) type the following command:
   * On Windows type:
-    ./build.ps1
+    powershell.exe -executionpolicy bypass -file .\build.ps1
   * On Linux/MacOS type:
     ./build.sh
 
