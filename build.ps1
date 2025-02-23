@@ -1,5 +1,6 @@
 $CakeVersion = "0.24.0"
-$DotNetVersion = select-string -Path .\global.json -Pattern '[\d]\.[\d]\.[\d]' | % {$_.Matches} | % {$_.Value };
+# $DotNetVersion = select-string -Path .\global.json -Pattern '[\d]\.[\d]\.[\d]' | % {$_.Matches} | % {$_.Value };
+$DotNetVersion = "8.0.406";
 $DotNetInstallerUri = "https://raw.githubusercontent.com/dotnet/cli/v$DotNetVersion/scripts/obtain/dotnet-install.ps1";
 
 # Make sure tools folder exists
