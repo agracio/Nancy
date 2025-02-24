@@ -67,7 +67,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-            name: test-summary
+            name: test-summary (Nancy ${{ matrix.os }})
             path: test/*.Tests/TestResults/TestResults*.xml
 
   publish-test-summary:
