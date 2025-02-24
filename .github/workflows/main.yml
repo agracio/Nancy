@@ -49,7 +49,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
             name: test-results
-            path: test/*.Tests\TestResults\TestResults.xml
+            path: test/*.Tests\TestResults\TestResults*.xml
 #
 #      - name: Run codacy-coverage-reporter
 #        uses: codacy/codacy-coverage-reporter-action@v1.3.0
