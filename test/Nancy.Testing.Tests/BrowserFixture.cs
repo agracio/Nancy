@@ -448,8 +448,8 @@ namespace Nancy.Testing.Tests
                     with.HttpRequest();
                     with.Accept("application/json");
                     with.FormValue("SomeString", "Hi");
-                    with.FormValue("SomeInt", "1");
                     with.FormValue("SomeNullableInt1", "2");
+                    with.FormValue("SomeInt", "1");
                     with.FormValue("SomeNullableInt2", string.Empty);
                     with.FormValue("SomeNullableInt3", null);
                     with.FormValue("SomeBoolean", "true");
@@ -460,11 +460,11 @@ namespace Nancy.Testing.Tests
 
             // Then
             Assert.Equal("Hi", actualModel.SomeString);
-            Assert.Equal(1, actualModel.SomeInt);
             actualModel.SomeNullableInt1.ShouldEqual(2);
             actualModel.SomeNullableInt2.ShouldBeNull();
             actualModel.SomeNullableInt3.ShouldBeNull();
             Assert.True(actualModel.SomeBoolean);
+            Assert.Equal(1, actualModel.SomeInt);
         }
 
         [Fact]
