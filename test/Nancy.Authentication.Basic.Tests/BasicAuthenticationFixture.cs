@@ -28,6 +28,16 @@
             BasicAuthentication.Enable(this.hooks, this.config);
         }
 
+        private async void TestNull(NancyContext context)
+        {
+            // When
+            var result = await this.hooks.BeforeRequest.Invoke(context, new CancellationToken());
+
+            // Then
+            result.ShouldBeNull();
+            context.CurrentUser.ShouldBeNull();
+        }
+
         [Fact]
         public void Should_add_a_pre_and_post_hook_in_application_when_enabled()
         {
@@ -52,7 +62,7 @@
 
             // When
             BasicAuthentication.Enable(module, this.config);
-            
+
             // Then
             module.Before.PipelineDelegates.ShouldHaveCount(2);
             module.After.PipelineDelegates.ShouldHaveCount(1);
@@ -107,12 +117,7 @@
                 Request = new FakeRequest("GET", "/")
             };
 
-            // When
-            var result = this.hooks.BeforeRequest.Invoke(context, new CancellationToken());
-
-            // Then
-            result.Result.ShouldBeNull();
-            context.CurrentUser.ShouldBeNull();
+            TestNull(context);
         }
 
         [Fact]
@@ -214,12 +219,7 @@
             var context = CreateContextWithHeader(
                 "Authorization", new[] { "FooScheme" + " " + EncodeCredentials("foo", "bar") });
 
-            // When
-            var result = this.hooks.BeforeRequest.Invoke(context, new CancellationToken());
-
-            // Then
-            result.Result.ShouldBeNull();
-            context.CurrentUser.ShouldBeNull();
+            TestNull(context);
         }
 
         [Theory]
@@ -246,12 +246,7 @@
             var context = CreateContextWithHeader(
                "Authorization", new[] { "Basic" + " " + "some credentials" });
 
-            // When
-            var result = this.hooks.BeforeRequest.Invoke(context, new CancellationToken());
-
-            // Then
-            result.Result.ShouldBeNull();
-            context.CurrentUser.ShouldBeNull();
+            TestNull(context);
         }
 
         [Fact]

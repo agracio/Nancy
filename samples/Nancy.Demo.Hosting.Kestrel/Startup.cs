@@ -4,12 +4,12 @@ namespace Nancy.Demo.Hosting.Kestrel
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Nancy.Owin;
-    
+
     public class Startup
     {
         private readonly IConfiguration config;
-        
-        public Startup(IHostingEnvironment env)
+
+        public Startup(IWebHostEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                               .AddJsonFile("appsettings.json")
@@ -17,7 +17,7 @@ namespace Nancy.Demo.Hosting.Kestrel
 
             config = builder.Build();
         }
-        
+
         public void Configure(IApplicationBuilder app)
         {
             var appConfig = new AppConfiguration();
