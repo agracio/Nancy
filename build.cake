@@ -113,7 +113,7 @@ Task("Test")
             }
 
             var settings = new ProcessSettings {
-                Arguments = string.Concat("test --configuration ", configuration, " --no-build"),
+                Arguments = string.Concat("test --configuration ", configuration, " --no-build", " --logger ", "trx;LogFileName=TestResults.xml"),
                 WorkingDirectory = project.GetDirectory()
             };
 
