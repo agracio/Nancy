@@ -119,7 +119,7 @@ Task("Test")
 
             if (IsRunningOnUnix())
             {
-                settings.Arguments.Append(string.Concat("-framework ", netCoreTarget));
+                settings.Arguments.Append(string.Concat("--framework ", netCoreTarget));
             }
 
             Information("Executing tests for " + project.GetFilename() + " with arguments: " + settings.Arguments.Render());
