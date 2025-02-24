@@ -53,12 +53,7 @@ Task("Test")
     .Does(() =>
     {
         //if (StartProcess("dotnet", "test --logger \"trx;LogFileName=TestResults.xml\"") != 0)
-        if (StartProcess("dotnet", "test -f net472 --logger \"trx;LogFileName=TestResults.net472.xml\"") != 0)
-        {
-            //Information("One or more tests failed during execution");
-            throw new CakeException("One or more tests failed during execution");
-        }
-        if (StartProcess("dotnet", "test -f net8.0 --logger \"trx;LogFileName=TestResults.net80.xml\"") != 0)
+        if (StartProcess("dotnet", "test --logger \"trx;LogFileName=TestResults.xml\"") != 0)
         {
             //Information("One or more tests failed during execution");
             throw new CakeException("One or more tests failed during execution");
