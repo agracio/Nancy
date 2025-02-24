@@ -187,7 +187,7 @@
         }
 
         [Fact]
-        public void Should_allow_favicon_override()
+        public async Task Should_allow_favicon_override()
         {
             // Given
             var favicon = new byte[] { 1, 2, 3 };
@@ -197,13 +197,13 @@
             this.bootstrapper.Initialise();
 
             // When
-            var result = this.bootstrapper.PreRequest.Invoke(context, new CancellationToken());
+            var result = await this.bootstrapper.PreRequest.Invoke(context, new CancellationToken());
 
             // Then
             result.ShouldNotBeNull();
-            result.Result.ContentType.ShouldEqual("image/vnd.microsoft.icon");
-            result.Result.StatusCode = HttpStatusCode.OK;
-            GetBodyBytes(result.Result).SequenceEqual(favicon).ShouldBeTrue();
+            result.ContentType.ShouldEqual("image/vnd.microsoft.icon");
+            result.StatusCode = HttpStatusCode.OK;
+            GetBodyBytes(result).SequenceEqual(favicon).ShouldBeTrue();
         }
 
         [Fact]

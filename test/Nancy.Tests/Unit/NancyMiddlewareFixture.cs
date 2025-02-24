@@ -159,7 +159,7 @@ namespace Nancy.Tests.Unit
         }
 
         [Fact]
-        public void Should_set_cookie_with_valid_header()
+        public async Task Should_set_cookie_with_valid_header()
         {
             // Given
             var fakeResponse = new Response {StatusCode = HttpStatusCode.OK};
@@ -170,7 +170,7 @@ namespace Nancy.Tests.Unit
             this.SetupFakeNancyCompleteCallback(fakeContext);
 
             // When
-            this.host.Invoke(this.environment).Wait();
+            await this.host.Invoke(this.environment);
             var respHeaders = Get<IDictionary<string, string[]>>(this.environment, "owin.ResponseHeaders");
 
             // Then
@@ -180,7 +180,7 @@ namespace Nancy.Tests.Unit
         }
 
         [Fact]
-        public void Should_append_setcookie_headers()
+        public async Task Should_append_setcookie_headers()
         {
             //Given
             var respHeaders = Get<IDictionary<string, string[]>>(this.environment, "owin.ResponseHeaders");
@@ -194,7 +194,7 @@ namespace Nancy.Tests.Unit
             this.SetupFakeNancyCompleteCallback(fakeContext);
 
             //When
-            this.host.Invoke(this.environment).Wait();
+            await this.host.Invoke(this.environment);
 
             //Then
             respHeaders["Set-Cookie"].Length.ShouldEqual(2);

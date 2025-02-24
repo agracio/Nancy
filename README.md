@@ -1,10 +1,17 @@
-# ** Announcement ** - Nancy is no longer being maintained! 
+[![Build status](https://ci.appveyor.com/api/projects/status/hoggxm9xbcklyeij?svg=true)](https://ci.appveyor.com/project/agracio/nancy)
+[![Actions Status][github-img]][github-url]
+![Static Badge](https://img.shields.io/badge/dotnet-net8.0-blue)
+![Static Badge](https://img.shields.io/badge/dotnet-net4.7.2-blue)
 
-We would like to thank all the thousands of users of Nancy, all the people who wrote blog posts, conference speakers, video producers and those that spread the word of Nancy.  
+------
 
-We would like to thank the 150+ contributors to Nancy that made it what it became, without you the work would have been much harder and opportunities missed.  
+# ** Announcement ** - Nancy is no longer being maintained!
 
-We would like to thank [VQ](http://www.vqcomms.com) for financially sponsoring our open source efforts.  
+We would like to thank all the thousands of users of Nancy, all the people who wrote blog posts, conference speakers, video producers and those that spread the word of Nancy.
+
+We would like to thank the 150+ contributors to Nancy that made it what it became, without you the work would have been much harder and opportunities missed.
+
+We would like to thank [VQ](http://www.vqcomms.com) for financially sponsoring our open source efforts.
 
 We would like to thank the core contributors to Nancy [@jchannon](https://github.com/jchannon), [@khellang](https://github.com/khellang), [@damianh](https://github.com/damianh), [@phillip-haydon](https://github.com/phillip-haydon), [@prabirshrestha](https://github.com/prabirshrestha), [@horsdal](https://github.com/horsdal) for working hard into the nights coding, testing and writing docs but most importantly the founders of Nancy itself [@thecodejunkie](https://github.com/thecodejunkie) and [@grumpydev](https://github.com/grumpydev) whose vision made Nancy what it was, a fun, performant and enjoyable web framework.
 
@@ -16,7 +23,7 @@ Nancy's licence is permissible so we encourage forking if you need to perform ma
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------
-# Meet Nancy [![NuGet Version](http://img.shields.io/nuget/v/Nancy.svg?style=flat)](https://www.nuget.org/packages/Nancy/) [![Slack Status](http://slack.nancyfx.org/badge.svg)](http://slack.nancyfx.org)
+# Meet Nancy [![NuGet Version](http://img.shields.io/nuget/v/Nancy.svg?style=flat)](https://www.nuget.org/packages/Nancy/)
 
 Nancy is a lightweight, low-ceremony, framework for building HTTP based services on .NET Framework/Core and [Mono](http://mono-project.com). The goal of the framework is to stay out of the way as much as possible and provide a super-duper-happy-path to all interactions.
 
@@ -120,3 +127,7 @@ Copyright © 2010 Andreas Håkansson, Steven Robbins and contributors
 ## License
 
 Nancy is licensed under [MIT](http://www.opensource.org/licenses/mit-license.php "Read more about the MIT license form"). Refer to license.txt for more information.
+
+
+[github-img]: https://github.com/agracio/Nancy/workflows/Test/badge.svg
+[github-url]: https://github.com/agracio/Nancy/actions/workflows/main.yml

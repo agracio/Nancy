@@ -16,7 +16,6 @@ on:
       - '.idea/**'
       - '.vscode/**'
       - 'README.md'
-      - 'gulpfile.js'
       - 'appveyor.yml'
       - 'how_to_build.txt'
 

@@ -5,7 +5,7 @@ namespace Nancy.Tests.Unit.Security
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;
-
+    using System.Threading.Tasks;
     using FakeItEasy;
 
     using Nancy.Responses;
@@ -16,6 +16,46 @@ namespace Nancy.Tests.Unit.Security
 
     public class ModuleSecurityFixture
     {
+        private async void TestForbidden(string method)
+        {
+            var module = new FakeHookedModule(new BeforePipeline());
+            var url = GetFakeUrl(false);
+            var context = new NancyContext
+            {
+                Request = new Request(method, url)
+            };
+
+            module.RequiresHttps();
+
+            // When
+            var result = await module.Before.Invoke(context, new CancellationToken());
+
+            // Then
+            result.ShouldNotBeNull();
+            result.StatusCode.ShouldEqual(HttpStatusCode.Forbidden);
+
+        }
+
+        private async void TestForbidden(FakeHookedModule module, NancyContext context)
+        {
+            // When
+            var result = await module.Before.Invoke(context, new CancellationToken());
+
+            // Then
+            result.ShouldNotBeNull();
+            result.StatusCode.ShouldEqual(HttpStatusCode.Forbidden);
+
+        }
+
+        private async void TestNull(FakeHookedModule module, NancyContext context)
+        {
+            // When
+            var result = await module.Before.Invoke(context, new CancellationToken());
+
+            // Then
+            result.ShouldBeNull();
+        }
+
         [Fact]
         public void Should_add_an_item_to_the_end_of_the_begin_pipeline_when_RequiresAuthentication_enabled()
         {
@@ -37,19 +77,19 @@ namespace Nancy.Tests.Unit.Security
         }
 
         [Fact]
-        public void Should_return_unauthorized_response_with_RequiresAuthentication_enabled_and_no_user()
+        public async Task Should_return_unauthorized_response_with_RequiresAuthentication_enabled_and_no_user()
         {
             var module = new FakeHookedModule(new BeforePipeline());
             module.RequiresAuthentication();
 
-            var result = module.Before.Invoke(new NancyContext(), new CancellationToken());
+            var result = await module.Before.Invoke(new NancyContext(), new CancellationToken());
 
-            result.Result.ShouldNotBeNull();
-            result.Result.StatusCode.ShouldEqual(HttpStatusCode.Unauthorized);
+            result.ShouldNotBeNull();
+            result.StatusCode.ShouldEqual(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
-        public void Should_return_unauthorized_response_with_RequiresAuthentication_enabled_and_no_identity()
+        public async Task Should_return_unauthorized_response_with_RequiresAuthentication_enabled_and_no_identity()
         {
             var module = new FakeHookedModule(new BeforePipeline());
             module.RequiresAuthentication();
@@ -59,14 +99,14 @@ namespace Nancy.Tests.Unit.Security
                 CurrentUser = new ClaimsPrincipal()
             };
 
-            var result = module.Before.Invoke(context, new CancellationToken());
+            var result = await module.Before.Invoke(context, new CancellationToken());
 
-            result.Result.ShouldNotBeNull();
-            result.Result.StatusCode.ShouldEqual(HttpStatusCode.Unauthorized);
+            result.ShouldNotBeNull();
+            result.StatusCode.ShouldEqual(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
-        public void Should_return_null_with_RequiresAuthentication_enabled_and_user_provided()
+        public async Task Should_return_null_with_RequiresAuthentication_enabled_and_user_provided()
         {
             var module = new FakeHookedModule(new BeforePipeline());
             module.RequiresAuthentication();
@@ -75,14 +115,11 @@ namespace Nancy.Tests.Unit.Security
             {
                 CurrentUser = GetFakeUser("Bob")
             };
-
-            var result = module.Before.Invoke(context, new CancellationToken());
-
-            result.Result.ShouldBeNull();
+            TestNull(module, context);
         }
 
         [Fact]
-        public void Should_return_forbidden_response_with_RequiresClaims_enabled_but_nonmatching_claims()
+        public async Task Should_return_forbidden_response_with_RequiresClaims_enabled_but_nonmatching_claims()
         {
             var module = new FakeHookedModule(new BeforePipeline());
             module.RequiresClaims(c => c.Type == "Claim1");
@@ -94,14 +131,11 @@ namespace Nancy.Tests.Unit.Security
                     new Claim("Claim3", string.Empty))
             };
 
-            var result = module.Before.Invoke(context, new CancellationToken());
-
-            result.Result.ShouldNotBeNull();
-            result.Result.StatusCode.ShouldEqual(HttpStatusCode.Forbidden);
+            TestForbidden(module, context);
         }
 
         [Fact]
-        public void Should_return_forbidden_response_with_RequiresClaims_enabled_but_claims_key_missing()
+        public async Task Should_return_forbidden_response_with_RequiresClaims_enabled_but_claims_key_missing()
         {
             var module = new FakeHookedModule(new BeforePipeline());
             module.RequiresClaims(c => c.Type == "Claim1");
@@ -110,14 +144,11 @@ namespace Nancy.Tests.Unit.Security
                 CurrentUser = GetFakeUser("username")
             };
 
-            var result = module.Before.Invoke(context, new CancellationToken());
-
-            result.Result.ShouldNotBeNull();
-            result.Result.StatusCode.ShouldEqual(HttpStatusCode.Forbidden);
+            TestForbidden(module, context);
         }
 
         [Fact]
-        public void Should_return_forbidden_response_with_RequiresClaims_enabled_but_not_all_claims_met()
+        public async Task Should_return_forbidden_response_with_RequiresClaims_enabled_but_not_all_claims_met()
         {
             var module = new FakeHookedModule(new BeforePipeline());
             module.RequiresClaims(c => c.Type == "Claim1", c => c.Type == "Claim2");
@@ -128,14 +159,11 @@ namespace Nancy.Tests.Unit.Security
                     new Claim("Claim2", string.Empty))
             };
 
-            var result = module.Before.Invoke(context, new CancellationToken());
-
-            result.Result.ShouldNotBeNull();
-            result.Result.StatusCode.ShouldEqual(HttpStatusCode.Forbidden);
+            TestForbidden(module, context);
         }
 
         [Fact]
-        public void Should_return_null_with_RequiresClaims_and_all_claims_met()
+        public async Task Should_return_null_with_RequiresClaims_and_all_claims_met()
         {
             var module = new FakeHookedModule(new BeforePipeline());
             module.RequiresClaims(c => c.Type == "Claim1", c => c.Type == "Claim2");
@@ -147,14 +175,12 @@ namespace Nancy.Tests.Unit.Security
                 new Claim("Claim3", string.Empty))
             };
 
-            var result = module.Before.Invoke(context, new CancellationToken());
-
-            result.Result.ShouldBeNull();
+            TestNull(module, context);
         }
 
 
         [Fact]
-        public void Should_return_forbidden_response_with_RequiresAnyClaim_enabled_but_nonmatching_claims()
+        public async Task Should_return_forbidden_response_with_RequiresAnyClaim_enabled_but_nonmatching_claims()
         {
             var module = new FakeHookedModule(new BeforePipeline());
             module.RequiresAnyClaim(c => c.Type == "Claim1");
@@ -166,14 +192,11 @@ namespace Nancy.Tests.Unit.Security
                     new Claim("Claim3", string.Empty))
             };
 
-            var result = module.Before.Invoke(context, new CancellationToken());
-
-            result.Result.ShouldNotBeNull();
-            result.Result.StatusCode.ShouldEqual(HttpStatusCode.Forbidden);
+            TestForbidden(module, context);
         }
 
         [Fact]
-        public void Should_return_forbidden_response_with_RequiresAnyClaim_enabled_but_claims_key_missing()
+        public async Task Should_return_forbidden_response_with_RequiresAnyClaim_enabled_but_claims_key_missing()
         {
             var module = new FakeHookedModule(new BeforePipeline());
             module.RequiresAnyClaim(c => c.Type == "Claim1");
@@ -182,14 +205,11 @@ namespace Nancy.Tests.Unit.Security
                 CurrentUser = GetFakeUser("username")
             };
 
-            var result = module.Before.Invoke(context, new CancellationToken());
-
-            result.Result.ShouldNotBeNull();
-            result.Result.StatusCode.ShouldEqual(HttpStatusCode.Forbidden);
+            TestForbidden(module, context);
         }
 
         [Fact]
-        public void Should_return_null_with_RequiresAnyClaim_and_any_claim_met()
+        public async Task Should_return_null_with_RequiresAnyClaim_and_any_claim_met()
         {
             var module = new FakeHookedModule(new BeforePipeline());
             module.RequiresAnyClaim(c => c.Type == "Claim1", c => c.Type == "Claim4");
@@ -201,13 +221,11 @@ namespace Nancy.Tests.Unit.Security
                     new Claim("Claim3", string.Empty))
             };
 
-            var result = module.Before.Invoke(context, new CancellationToken());
-
-            result.Result.ShouldBeNull();
+            TestNull(module, context);
         }
 
         [Fact]
-        public void Should_return_redirect_response_when_request_url_is_non_secure_method_is_get_and_requires_https()
+        public async Task Should_return_redirect_response_when_request_url_is_non_secure_method_is_get_and_requires_https()
         {
             // Given
             var module = new FakeHookedModule(new BeforePipeline());
@@ -220,19 +238,19 @@ namespace Nancy.Tests.Unit.Security
             module.RequiresHttps();
 
             // When
-            var result = module.Before.Invoke(context, new CancellationToken());
+            var result = await module.Before.Invoke(context, new CancellationToken());
 
             // Then
-            result.Result.ShouldNotBeNull();
-            result.Result.ShouldBeOfType<RedirectResponse>();
+            result.ShouldNotBeNull();
+            result.ShouldBeOfType<RedirectResponse>();
 
             url.Scheme = "https";
             url.Port = null;
-            result.Result.Headers["Location"].ShouldEqual(url.ToString());
+            result.Headers["Location"].ShouldEqual(url.ToString());
         }
 
         [Fact]
-        public void Should_return_redirect_response_with_specific_port_number_when_request_url_is_non_secure_method_is_get_and_requires_https()
+        public async Task Should_return_redirect_response_with_specific_port_number_when_request_url_is_non_secure_method_is_get_and_requires_https()
         {
             // Given
             var module = new FakeHookedModule(new BeforePipeline());
@@ -245,123 +263,49 @@ namespace Nancy.Tests.Unit.Security
             module.RequiresHttps(true, 999);
 
             // When
-            var result = module.Before.Invoke(context, new CancellationToken());
+            var result = await module.Before.Invoke(context, new CancellationToken());
 
             // Then
-            result.Result.ShouldNotBeNull();
-            result.Result.ShouldBeOfType<RedirectResponse>();
+            result.ShouldNotBeNull();
+            result.ShouldBeOfType<RedirectResponse>();
 
             url.Scheme = "https";
             url.Port = 999;
-            result.Result.Headers["Location"].ShouldEqual(url.ToString());
+            result.Headers["Location"].ShouldEqual(url.ToString());
         }
 
         [Fact]
-        public void Should_return_forbidden_response_when_request_url_is_non_secure_method_is_post_and_requires_https()
+        public async Task Should_return_forbidden_response_when_request_url_is_non_secure_method_is_post_and_requires_https()
         {
-            // Given
-            var module = new FakeHookedModule(new BeforePipeline());
-            var url = GetFakeUrl(false);
-            var context = new NancyContext
-            {
-                Request = new Request("POST", url)
-            };
-
-            module.RequiresHttps();
-
-            // When
-            var result = module.Before.Invoke(context, new CancellationToken());
-
-            // Then
-            result.Result.ShouldNotBeNull();
-            result.Result.StatusCode.ShouldEqual(HttpStatusCode.Forbidden);
+            TestForbidden("POST");
         }
 
         [Fact]
-        public void Should_return_forbidden_response_when_request_url_is_non_secure_method_is_delete_and_requires_https()
+        public async Task Should_return_forbidden_response_when_request_url_is_non_secure_method_is_delete_and_requires_https()
         {
-            // Given
-            var module = new FakeHookedModule(new BeforePipeline());
-            var url = GetFakeUrl(false);
-            var context = new NancyContext
-            {
-                Request = new Request("DELETE", url)
-            };
-
-            module.RequiresHttps();
-
-            // When
-            var result = module.Before.Invoke(context, new CancellationToken());
-
-            // Then
-            result.Result.ShouldNotBeNull();
-            result.Result.StatusCode.ShouldEqual(HttpStatusCode.Forbidden);
+            TestForbidden("DELETE");
         }
 
         [Fact]
-        public void Should_return_forbidden_response_when_request_url_is_non_secure_method_is_get_and_requires_https_and_redirect_is_false()
+        public async Task Should_return_forbidden_response_when_request_url_is_non_secure_method_is_get_and_requires_https_and_redirect_is_false()
         {
-            // Given
-            var module = new FakeHookedModule(new BeforePipeline());
-            var url = GetFakeUrl(false);
-            var context = new NancyContext
-            {
-                Request = new Request("GET", url)
-            };
-
-            module.RequiresHttps(false);
-
-            // When
-            var result = module.Before.Invoke(context, new CancellationToken());
-
-            // Then
-            result.Result.ShouldNotBeNull();
-            result.Result.StatusCode.ShouldEqual(HttpStatusCode.Forbidden);
+            TestForbidden("GET");
         }
 
         [Fact]
-        public void Should_return_forbidden_response_when_request_url_is_non_secure_method_is_post_and_requires_https_and_redirect_is_false()
+        public async Task Should_return_forbidden_response_when_request_url_is_non_secure_method_is_post_and_requires_https_and_redirect_is_false()
         {
-            // Given
-            var module = new FakeHookedModule(new BeforePipeline());
-            var url = GetFakeUrl(false);
-            var context = new NancyContext
-            {
-                Request = new Request("POST", url)
-            };
-
-            module.RequiresHttps(false);
-
-            // When
-            var result = module.Before.Invoke(context, new CancellationToken());
-
-            // Then
-            result.Result.ShouldNotBeNull();
-            result.Result.StatusCode.ShouldEqual(HttpStatusCode.Forbidden);
+            TestForbidden("POST");
         }
 
         [Fact]
-        public void Should_return_null_response_when_request_url_is_secure_method_is_get_and_requires_https()
+        public async Task Should_return_null_response_when_request_url_is_secure_method_is_get_and_requires_https()
         {
-            // Given
-            var module = new FakeHookedModule(new BeforePipeline());
-            var url = GetFakeUrl(true);
-            var context = new NancyContext
-            {
-                Request = new Request("GET", url)
-            };
-
-            module.RequiresHttps();
-
-            // When
-            var result = module.Before.Invoke(context, new CancellationToken());
-
-            // Then
-            result.Result.ShouldBeNull();
+            TestForbidden("GET");
         }
 
         [Fact]
-        public void Should_return_null_response_when_request_url_is_secure_method_is_post_and_requires_https()
+        public async Task Should_return_null_response_when_request_url_is_secure_method_is_post_and_requires_https()
         {
             // Given
             var module = new FakeHookedModule(new BeforePipeline());
@@ -373,18 +317,14 @@ namespace Nancy.Tests.Unit.Security
 
             module.RequiresHttps();
 
-            // When
-            var result = module.Before.Invoke(context, new CancellationToken());
-
-            // Then
-            result.Result.ShouldBeNull();
+            TestNull(module, context);
         }
 
         private static ClaimsPrincipal GetFakeUser(string userName, params Claim[] claims)
         {
             var claimsList = claims.ToList();
             claimsList.Add(new Claim(ClaimTypes.NameIdentifier, userName));
-            
+
             return new ClaimsPrincipal(new ClaimsIdentity(claimsList, "test"));
         }
 

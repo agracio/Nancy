@@ -1,7 +1,7 @@
 ﻿namespace Nancy.Tests.Unit.Routing
 {
     using System.Threading;
-
+    using System.Threading.Tasks;
     using FakeItEasy;
 
     using Nancy.Diagnostics;
@@ -45,7 +45,7 @@
         }
 
         [Fact]
-        public void Should_handle_RouteExecutionEarlyExitException_gracefully()
+        public async Task Should_handle_RouteExecutionEarlyExitException_gracefully()
         {
             // Given
             var response = new Response();
@@ -60,14 +60,14 @@
             };
 
             // When
-            var result = this.invoker.Invoke(route, new CancellationToken(), parameters, context).Result;
+            var result = await this.invoker.Invoke(route, new CancellationToken(), parameters, context);
 
             // Then
             result.ShouldBeSameAs(response);
         }
 
         [Fact]
-        public void Should_log_the_reason_for_early_exits()
+        public async Task Should_log_the_reason_for_early_exits()
         {
             // Given
             var response = new Response();
@@ -82,14 +82,14 @@
             };
 
             // When
-            var result = this.invoker.Invoke(route, new CancellationToken(), parameters, context).Result;
+            await this.invoker.Invoke(route, new CancellationToken(), parameters, context);
 
             // Then
             context.Trace.TraceLog.ToString().ShouldContain("Reason Testing");
         }
 
         [Fact]
-        public void Should_invoke_response_negotiator_for_reference_model()
+        public async Task Should_invoke_response_negotiator_for_reference_model()
         {
             // Given
             var model = new Person { FirstName = "First", LastName = "Last" };
@@ -101,14 +101,14 @@
             };
 
             // When
-            var result = this.invoker.Invoke(route, new CancellationToken(), parameters, context).Result;
+            await this.invoker.Invoke(route, new CancellationToken(), parameters, context);
 
             // Then
             A.CallTo(() => this.responseNegotiator.NegotiateResponse(model, context)).MustHaveHappened();
         }
 
         [Fact]
-        public void Should_invoke_response_negotiator_for_value_type_model()
+        public async Task Should_invoke_response_negotiator_for_value_type_model()
         {
             // Given
             var model = new StructModel();
@@ -120,7 +120,7 @@
             };
 
             // When
-            var result = this.invoker.Invoke(route, new CancellationToken(), parameters, context).Result;
+            await this.invoker.Invoke(route, new CancellationToken(), parameters, context);
 
             // Then
             A.CallTo(() => this.responseNegotiator.NegotiateResponse(model, context)).MustHaveHappened();

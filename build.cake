@@ -48,28 +48,15 @@ Task("Clean")
         CleanDirectories("./samples/**/" + configuration);
     });
 
-Task("Compile")
-    .Description("Builds all the projects in the solution")
-    .IsDependentOn("Clean")
-    //.IsDependentOn("Restore-NuGet-Packages")
-    .Does(() =>
-    {
-
-        DotNetCoreBuild("./Nancy.sln", new DotNetCoreBuildSettings
-        {
-            Configuration = configuration,
-        });
-    });
-
 Task("Test")
     .Description("Executes unit tests for all projects")
-    //.IsDependentOn("Compile")
     .Does(() =>
     {
+        //if (StartProcess("dotnet", "test --logger \"trx;LogFileName=TestResults.xml\"") != 0)
         if (StartProcess("dotnet", "test --logger \"trx;LogFileName=TestResults.xml\"") != 0)
         {
-            Information("One or more tests failed during execution");
-            //throw new CakeException("One or more tests failed during execution");
+            //Information("One or more tests failed during execution");
+            throw new CakeException("One or more tests failed during execution");
         }
     });
 

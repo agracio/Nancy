@@ -13,9 +13,12 @@
     using Nancy.Responses;
 
     using Xunit;
+    using Xunit.Abstractions;
 
     public class StaticContentConventionBuilderFixture
     {
+        private readonly ITestOutputHelper testOutputHelper;
+
         private const string StylesheetContents = @"body {
 	background-color: white;
 }";
@@ -23,10 +26,11 @@
         private readonly string directory;
         private readonly INancyEnvironment environment;
 
-        public StaticContentConventionBuilderFixture()
+        public StaticContentConventionBuilderFixture(ITestOutputHelper testOutputHelper)
         {
+            this.testOutputHelper = testOutputHelper;
             var assembly = typeof(StaticContentConventionBuilderFixture).GetAssembly();
-            var localPath = new Uri(assembly.CodeBase).LocalPath;
+            var localPath = new Uri(assembly.Location).LocalPath;
             this.directory = new DirectoryInfo(localPath).Parent.FullName;
 
             this.environment = new DefaultNancyEnvironment();

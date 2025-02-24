@@ -1143,8 +1143,8 @@ namespace Nancy.Tests.Unit
             var result = this.dictionary.ToDictionary();
 
             //Then
-            Assert.IsType(typeof(long), GetLongValue(result["TestInt"]));
-            Assert.IsType(typeof(string), GetStringValue(result["TestString"]));
+            Assert.IsType<long>(GetLongValue(result["TestInt"]));
+            Assert.IsType<string>(GetStringValue(result["TestString"]));
         }
 
         [Fact]

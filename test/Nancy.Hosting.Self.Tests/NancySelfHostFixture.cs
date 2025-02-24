@@ -179,8 +179,7 @@ namespace Nancy.Hosting.Self.Tests
         {
             using (CreateAndOpenSelfHost())
             {
-                var reader =
-                    new StreamReader(WebRequest.Create(BaseUri.ToString().TrimEnd('/')).GetResponse().GetResponseStream());
+                var reader = new StreamReader(WebRequest.Create(BaseUri.ToString().TrimEnd('/')).GetResponse().GetResponseStream());
 
                 var response = reader.ReadToEnd();
 
@@ -214,13 +213,12 @@ namespace Nancy.Hosting.Self.Tests
 
 
         [SkippableFact]
-        public void Should_be_able_to_recover_from_rendering_exception()
+        public async Task Should_be_able_to_recover_from_rendering_exception()
         {
             using (CreateAndOpenSelfHost())
             {
 
-                var reader =
-                    new StreamReader(WebRequest.Create(new Uri(BaseUri, "exception")).GetResponse().GetResponseStream());
+                var reader =  new StreamReader(WebRequest.Create(new Uri(BaseUri, "exception")).GetResponse().GetResponseStream());
 
                 var response = reader.ReadToEnd();
 
