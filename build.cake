@@ -100,7 +100,7 @@ Task("Package-NuGet")
 
 Task("Publish")
     .Description("Gathers output files and copies them to the output folder")
-    .IsDependentOn("Compile")
+    .IsDependentOn("Test")
     .Does(() =>
     {
         // Copy net472 binaries.
