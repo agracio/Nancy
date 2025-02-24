@@ -48,15 +48,86 @@ Task("Clean")
         CleanDirectories("./samples/**/" + configuration);
     });
 
-Task("Test")
-    .Description("Executes unit tests for all projects")
+Task("Compile")
+    .Description("Builds all the projects in the solution")
+    .IsDependentOn("Clean")
+    .IsDependentOn("Restore-NuGet-Packages")
     .Does(() =>
     {
-        //if (StartProcess("dotnet", "test --logger \"trx;LogFileName=TestResults.xml\"") != 0)
-        if (StartProcess("dotnet", "test --logger \"trx;LogFileName=TestResults.xml\"") != 0)
+        var projects =
+            GetFiles("./**/*.csproj") -
+            GetFiles("./samples/**/*.csproj");
+
+        if (projects.Count == 0)
         {
-            //Information("One or more tests failed during execution");
-            throw new CakeException("One or more tests failed during execution");
+            throw new CakeException("Unable to find any projects to build.");
+        }
+
+        foreach(var project in projects)
+        {
+            var content =
+                System.IO.File.ReadAllText(project.FullPath, Encoding.UTF8);
+
+            if (IsRunningOnUnix() && content.Contains(">" + fullFrameworkTarget + "<"))
+            {
+                Information(project.GetFilename() + " only supports " +fullFrameworkTarget + " and cannot be built on *nix. Skipping.");
+                continue;
+            }
+
+            DotNetCoreBuild(project.GetDirectory().FullPath, new DotNetCoreBuildSettings {
+                ArgumentCustomization = args => {
+                    if (IsRunningOnUnix())
+                    {
+                        args.Append(string.Concat("-f ", project.GetDirectory().GetDirectoryName().Contains(".Tests") ? netCoreTarget : netStandardTarget));
+                    }
+
+                    return args;
+                },
+                Configuration = configuration
+            });
+        }
+    });
+
+Task("Test")
+    .Description("Executes unit tests for all projects")
+    .IsDependentOn("Compile")
+    .Does(() =>
+    {
+        var projects =
+            GetFiles("./test/**/*.csproj");
+
+        if (projects.Count == 0)
+        {
+            throw new CakeException("Unable to find any projects to test.");
+        }
+
+        foreach(var project in projects)
+        {
+            var content =
+                System.IO.File.ReadAllText(project.FullPath, Encoding.UTF8);
+
+            if (IsRunningOnUnix() && content.Contains(">" + fullFrameworkTarget + "<"))
+            {
+                Information(project.GetFilename() + " only supports " +fullFrameworkTarget + " and tests cannot be executed on *nix. Skipping.");
+                continue;
+            }
+
+            var settings = new ProcessSettings {
+                Arguments = string.Concat("test --configuration ", configuration, " --no-build"),
+                WorkingDirectory = project.GetDirectory()
+            };
+
+            if (IsRunningOnUnix())
+            {
+                settings.Arguments.Append(string.Concat("-framework ", netCoreTarget));
+            }
+
+            Information("Executing tests for " + project.GetFilename() + " with arguments: " + settings.Arguments.Render());
+
+            if (StartProcess("dotnet", settings) != 0)
+            {
+                throw new CakeException("One or more tests failed during execution of: " + project.GetFilename());
+            }
         }
     });
 
