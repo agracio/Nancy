@@ -63,18 +63,12 @@ jobs:
           name: nuget-packages-${{ matrix.os }}
           path: build/nuget/*.nupkg
 
-      - name: Upload test results
+      - name: Upload test summary
         if: always()
         uses: actions/upload-artifact@v4
         with:
-            name: test-results
+            name: test-summary
             path: test/*.Tests/TestResults/TestResults*.xml
-#
-#      - name: Run codacy-coverage-reporter
-#        uses: codacy/codacy-coverage-reporter-action@v1.3.0
-#        with:
-#          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-#          coverage-reports: coverage/lcov.info
 
   publish-test-summary:
     name: "publish test-summary"
@@ -96,5 +90,5 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
           check_run_annotations: 'none'
-          check_name: 'test-results'
+          check_name: 'test-summary'
           files: "artifacts/**/*.xml"
