@@ -5,6 +5,7 @@ namespace Nancy.Hosting.Self.Tests
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
     using FakeItEasy;
@@ -14,6 +15,7 @@ namespace Nancy.Hosting.Self.Tests
     using Nancy.Tests.xUnitExtensions;
 
     using Xunit;
+    using Xunit.Abstractions;
 
     /// <remarks>
     /// These tests attempt to listen on port 1234, and so require either administrative
@@ -24,6 +26,13 @@ namespace Nancy.Hosting.Self.Tests
     /// </remarks>
     public class NancySelfHostFixture
     {
+        private readonly ITestOutputHelper testOutputHelper;
+
+        public NancySelfHostFixture(ITestOutputHelper testOutputHelper)
+        {
+            this.testOutputHelper = testOutputHelper;
+        }
+
         private static readonly Uri BaseUri = new Uri("http://localhost:1234/base/");
 
         [SkippableFact]
@@ -49,22 +58,22 @@ namespace Nancy.Hosting.Self.Tests
         }
 
         [SkippableFact]
-        public void Should_be_able_to_get_any_header_from_selfhost()
+        public async Task Should_be_able_to_get_any_header_from_selfhost()
         {
             // Given
             using (CreateAndOpenSelfHost())
             {
                 // When
-                var request = WebRequest.Create(new Uri(BaseUri, "rel/header/?query=value"));
-                request.Method = "GET";
-
+                var client = new HttpClient();
+                var response = await client.GetAsync(new Uri(BaseUri, "rel/header/?query=value"));
+                var matches = response.Headers.Where(val => val.Key == "X-Some-Header").SelectMany(val => val.Value);
                 // Then
-                request.GetResponse().Headers["X-Some-Header"].ShouldEqual("Some value");
+                matches.Single().ShouldEqual("Some value");
             }
         }
 
         [SkippableFact]
-        public void Should_set_query_string_and_uri_correctly()
+        public async Task Should_set_query_string_and_uri_correctly()
         {
             // Given
             Request nancyRequest = null;
@@ -79,17 +88,8 @@ namespace Nancy.Hosting.Self.Tests
             // When
             using (CreateAndOpenSelfHost(fakeBootstrapper))
             {
-                var request = WebRequest.Create(new Uri(BaseUri, "test/stuff?query=value&query2=value2"));
-                request.Method = "GET";
-
-                try
-                {
-                    request.GetResponse();
-                }
-                catch (WebException)
-                {
-                    // Will throw because it returns 404 - don't care.
-                }
+                var client = new HttpClient();
+                await client.GetAsync(new Uri(BaseUri, "test/stuff?query=value&query2=value2"));
             }
 
             // Then
@@ -99,13 +99,12 @@ namespace Nancy.Hosting.Self.Tests
         }
 
         [SkippableFact]
-        public void Should_be_able_to_get_from_selfhost()
+        public async Task Should_be_able_to_get_from_selfhost()
         {
             using (CreateAndOpenSelfHost())
             {
-                var reader =
-                    new StreamReader(WebRequest.Create(new Uri(BaseUri, "rel")).GetResponse().GetResponseStream());
-
+                var client = new HttpClient();
+                var reader = new StreamReader(await client.GetStreamAsync(new Uri(BaseUri, "rel")));
                 var response = reader.ReadToEnd();
 
                 response.ShouldEqual("This is the site route");
@@ -113,16 +112,20 @@ namespace Nancy.Hosting.Self.Tests
         }
 
         [SkippableFact]
-        public void Should_be_able_to_get_from_chunked_selfhost()
+        public async Task Should_be_able_to_get_from_chunked_selfhost()
         {
             using (CreateAndOpenSelfHost())
             {
-                var response = WebRequest.Create(new Uri(BaseUri, "rel")).GetResponse();
+                var client = new HttpClient();
+                var response = await client.GetAsync(new Uri(BaseUri, "rel"));
 
-                Assert.Equal("chunked", response.Headers["Transfer-Encoding"]);
-                Assert.Null(response.Headers["Content-Length"]);
+                // Then
+                var chunked = response.Headers.Where(val => val.Key == "Transfer-Encoding").SelectMany(val => val.Value);
+                var contentLength = response.Headers.Where(val => val.Key == "Content-Length").SelectMany(val => val.Value);
+                chunked.Single().ShouldEqual("chunked");
+                contentLength.Count().ShouldEqual(0);
 
-                using (var reader = new StreamReader(response.GetResponseStream()))
+                using (var reader = new StreamReader(await client.GetStreamAsync(new Uri(BaseUri, "rel"))))
                 {
                     var contents = reader.ReadToEnd();
                     contents.ShouldEqual("This is the site route");
@@ -133,7 +136,7 @@ namespace Nancy.Hosting.Self.Tests
         [SkippableFact]
         public void Should_be_able_to_get_from_contentlength_selfhost()
         {
-            HostConfiguration configuration = new HostConfiguration()
+            var configuration = new HostConfiguration()
             {
                 AllowChunkedEncoding = false
             };
@@ -153,36 +156,30 @@ namespace Nancy.Hosting.Self.Tests
         }
 
         [SkippableFact]
-        public void Should_be_able_to_post_body_to_selfhost()
+        public async Task Should_be_able_to_post_body_to_selfhost()
         {
             using (CreateAndOpenSelfHost())
             {
                 const string testBody = "This is the body of the request";
 
-                var request =
-                    WebRequest.Create(new Uri(BaseUri, "rel"));
-                request.Method = "POST";
-
-                var writer =
-                    new StreamWriter(request.GetRequestStream()) { AutoFlush = true };
-                writer.Write(testBody);
-
-                var responseBody =
-                    new StreamReader(request.GetResponse().GetResponseStream()).ReadToEnd();
-
-                responseBody.ShouldEqual(testBody);
+                var client = new HttpClient();
+                using (var response = await client.PostAsync(new Uri(BaseUri, "rel"), new StringContent(testBody)))
+                {
+                    var responseBody = new StreamReader(await response.Content.ReadAsStreamAsync());
+                    responseBody.ShouldEqual(testBody);
+                }
             }
         }
 
         [SkippableFact]
-        public void Should_be_able_to_get_from_selfhost_with_slashless_uri()
+        public async Task Should_be_able_to_get_from_selfhost_with_slashless_uri()
         {
             using (CreateAndOpenSelfHost())
             {
-                var reader = new StreamReader(WebRequest.Create(BaseUri.ToString().TrimEnd('/')).GetResponse().GetResponseStream());
+                var client = new HttpClient();
 
+                var reader = new StreamReader(await client.GetStreamAsync(BaseUri.ToString().TrimEnd('/')));
                 var response = reader.ReadToEnd();
-
                 response.ShouldEqual("This is the site home");
             }
         }
@@ -217,11 +214,10 @@ namespace Nancy.Hosting.Self.Tests
         {
             using (CreateAndOpenSelfHost())
             {
+                var client = new HttpClient();
 
-                var reader =  new StreamReader(WebRequest.Create(new Uri(BaseUri, "exception")).GetResponse().GetResponseStream());
-
+                var reader = new StreamReader(await client.GetStreamAsync(new Uri(BaseUri, "exception")));
                 var response = reader.ReadToEnd();
-
                 response.ShouldEqual("Content");
             }
         }
