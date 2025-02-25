@@ -1,6 +1,6 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/hoggxm9xbcklyeij?svg=true)](https://ci.appveyor.com/project/agracio/nancy)
 [![Actions Status][github-img]][github-url]
-![Static Badge](https://img.shields.io/badge/dotnet-net8.0-blue)
+![Static Badge](https://img.shields.io/badge/dotnet-netstandard2.0-blue)
 ![Static Badge](https://img.shields.io/badge/dotnet-net4.7.2-blue)
 
 ------
