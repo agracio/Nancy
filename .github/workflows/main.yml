@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-          os: [ ubuntu-22.04, ubuntu-22.04-arm, windows-2022 ]
+          os: [ ubuntu-22.04, ubuntu-22.04-arm, windows-2025, windows-11-arm, macos-13, macos-15 ]
 
     steps:
       - name: Checkout code
@@ -46,6 +46,13 @@ jobs:
             sudo apt update
             sudo apt install mono-devel
 
+      - name: Setup Mono
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+            brew install mono --overwrite
+            brew reinstall pkg-config
+
       - name: Cache NuGet Packages
         id: nuget-packages
         uses: actions/cache@v3
@@ -60,8 +67,8 @@ jobs:
         shell: pwsh
         run: .\build.ps1
 
-      - if: runner.os == 'Linux'
-        name: "Cake Linux"
+      - if: runner.os == 'Linux' || runner.os == 'macOS'
+        name: "Cake Linux|macOS"
         shell: bash
         run: ./build.sh
 
@@ -95,9 +102,9 @@ jobs:
         with:
           path: artifacts
 
-      - name: publish test-summary
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        with:
-          check_run_annotations: 'none'
-          check_name: 'test-summary'
-          files: "artifacts/**/*.xml"
+#      - name: publish test-summary
+#        uses: EnricoMi/publish-unit-test-result-action@v2
+#        with:
+#          check_run_annotations: 'none'
+#          check_name: 'test-summary'
+#          files: "artifacts/**/*.xml"
