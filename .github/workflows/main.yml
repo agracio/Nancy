@@ -86,21 +86,21 @@ jobs:
             name: test-summary (Nancy ${{ matrix.os }})
             path: test/*.Tests/TestResults/TestResults*.xml
 
-  publish-test-summary:
-    name: "publish test-summary"
-    needs: test
-    runs-on: ubuntu-latest
-    permissions:
-      checks: write
-      pull-requests: write
-
-    if: always()
-
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
+#  publish-test-summary:
+#    name: "publish test-summary"
+#    needs: test
+#    runs-on: ubuntu-latest
+#    permissions:
+#      checks: write
+#      pull-requests: write
+#
+#    if: always()
+#
+#    steps:
+#      - name: Download Artifacts
+#        uses: actions/download-artifact@v4
+#        with:
+#          path: artifacts
 
 #      - name: publish test-summary
 #        uses: EnricoMi/publish-unit-test-result-action@v2
