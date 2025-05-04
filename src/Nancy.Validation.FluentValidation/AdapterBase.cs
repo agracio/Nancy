@@ -43,7 +43,7 @@
             {
                 return new MessageFormatter()
                     .AppendPropertyName(displayName ?? rule.GetDisplayName())
-                    .BuildMessage(validator.ErrorMessageSource.GetString());
+                    .BuildMessage(validator.Options.ErrorMessageSource.GetString(null));
             };
         }
     }
