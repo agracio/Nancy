@@ -58,19 +58,15 @@ jobs:
             path: ~/.nuget/packages
             key: ${{ matrix.os }}-nuget-package-cache
 
-      - name: Test
-        run: |
-            dotnet test --configuration Release --logger GitHubActions
-
       - if: runner.os == 'Windows'
-        name: "Package"
+        name: "Cake Windows"
         shell: pwsh
-        run: .\build.ps1 --target=Package-NuGet
+        run: .\build.ps1
 
       - if: runner.os == 'Linux' || runner.os == 'macOS'
-        name: "Package"
+        name: "Cake Linux|macOS"
         shell: bash
-        run: ./build.sh --target=Package-NuGet
+        run: ./build.sh
 
       - name: Upload nuget packages
         if: always()
@@ -86,25 +82,25 @@ jobs:
             name: test-summary (Nancy ${{ matrix.os }})
             path: test/*.Tests/TestResults/TestResults*.xml
 
-#  publish-test-summary:
-#    name: "publish test-summary"
-#    needs: test
-#    runs-on: ubuntu-latest
-#    permissions:
-#      checks: write
-#      pull-requests: write
-#
-#    if: always()
-#
-#    steps:
-#      - name: Download Artifacts
-#        uses: actions/download-artifact@v4
-#        with:
-#          path: artifacts
-#
-#      - name: publish test-summary
-#        uses: EnricoMi/publish-unit-test-result-action@v2
-#        with:
-#          check_run_annotations: 'none'
-#          check_name: 'test-summary'
-#          files: "artifacts/**/*.xml"
+  publish-test-summary:
+    name: "publish test-summary"
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+
+    if: always()
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: publish test-summary
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          check_run_annotations: 'none'
+          check_name: 'test-summary'
+          files: "artifacts/**/*.xml"
