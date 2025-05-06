@@ -60,7 +60,7 @@ jobs:
 
       - name: Test
         run: |
-            dotnet test --configuration Release --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
+            dotnet test --configuration Release --logger GitHubActions
 
       - if: runner.os == 'Windows'
         name: "Package"
