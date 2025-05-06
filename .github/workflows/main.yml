@@ -40,14 +40,10 @@ jobs:
       - if: runner.os == 'Linux'
         name: "Setup Mono"
         run: |
-            sudo apt install ca-certificates gnupg
-            sudo gpg --homedir /tmp --no-default-keyring --keyring /usr/share/keyrings/mono-official-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-            echo "deb [signed-by=/usr/share/keyrings/mono-official-archive-keyring.gpg] https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
-            sudo apt update
-            sudo apt install mono-devel
+            sudo apt -q install mono-complete pkg-config libglib2.0-dev
 
-      - name: Setup Mono
-        if: runner.os == 'macOS'
+      - if: runner.os == 'macOS'
+        name: Setup Mono
         shell: bash
         run: |
             brew install mono --overwrite
@@ -62,15 +58,21 @@ jobs:
             path: ~/.nuget/packages
             key: ${{ matrix.os }}-nuget-package-cache
 
+      - name: Test
+        run: |
+            dotnet test
+            --configuration Release
+            --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
+
       - if: runner.os == 'Windows'
-        name: "Cake Windows"
+        name: "Package"
         shell: pwsh
-        run: .\build.ps1
+        run: .\build.ps1 --target=Package-NuGet
 
       - if: runner.os == 'Linux' || runner.os == 'macOS'
-        name: "Cake Linux|macOS"
+        name: "Package"
         shell: bash
-        run: ./build.sh
+        run: ./build.sh --target=Package-NuGet
 
       - name: Upload nuget packages
         if: always()
@@ -86,25 +88,25 @@ jobs:
             name: test-summary (Nancy ${{ matrix.os }})
             path: test/*.Tests/TestResults/TestResults*.xml
 
-  publish-test-summary:
-    name: "publish test-summary"
-    needs: test
-    runs-on: ubuntu-latest
-    permissions:
-      checks: write
-      pull-requests: write
-
-    if: always()
-
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-
-      - name: publish test-summary
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        with:
-          check_run_annotations: 'none'
-          check_name: 'test-summary'
-          files: "artifacts/**/*.xml"
+#  publish-test-summary:
+#    name: "publish test-summary"
+#    needs: test
+#    runs-on: ubuntu-latest
+#    permissions:
+#      checks: write
+#      pull-requests: write
+#
+#    if: always()
+#
+#    steps:
+#      - name: Download Artifacts
+#        uses: actions/download-artifact@v4
+#        with:
+#          path: artifacts
+#
+#      - name: publish test-summary
+#        uses: EnricoMi/publish-unit-test-result-action@v2
+#        with:
+#          check_run_annotations: 'none'
+#          check_name: 'test-summary'
+#          files: "artifacts/**/*.xml"
