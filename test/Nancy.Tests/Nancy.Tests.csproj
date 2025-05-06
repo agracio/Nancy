@@ -31,10 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitHubActionsTestLogger" Version="2.4.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" />
     <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageReference Update="FakeItEasy.Analyzer.CSharp" Version="6.1.1">
